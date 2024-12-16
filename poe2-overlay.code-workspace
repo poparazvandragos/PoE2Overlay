@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"name": "renderer",
+			"path": "renderer"
+		},
+		{
+			"name": "main",
+			"path": "main"
+		},
+		{
+			"name": "root",
+			"path": "."
+		}
+	],
+	"settings": {
+		"files.exclude": {
+			"main/": true,
+			"renderer/": true,
+			"docs/": true,
+			"dist/": true
+		}
+	}
+}
