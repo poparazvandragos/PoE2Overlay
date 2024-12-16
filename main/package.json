@@ -1,6 +1,6 @@
 {
   "name": "poe2-overlay",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "dev": "node build/script.mjs",
