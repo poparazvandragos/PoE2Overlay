@@ -10,9 +10,9 @@ import type { ItemSearchWidget } from './item-search/widget'
 const _config = shallowRef<Config | null>(null)
 let _lastSavedConfig: Config | null = null
 
-export function AppConfig (): Config
-export function AppConfig<T extends widget.Widget> (type: string): T | undefined
-export function AppConfig (type?: string) {
+export function AppConfig(): Config
+export function AppConfig<T extends widget.Widget>(type: string): T | undefined
+export function AppConfig(type?: string) {
   if (!type) {
     return _config.value!
   } else {
@@ -20,12 +20,12 @@ export function AppConfig (type?: string) {
   }
 }
 
-export function updateConfig (updates: Config) {
+export function updateConfig(updates: Config) {
   _config.value = deepReactive(JSON.parse(JSON.stringify(updates)))
   document.documentElement.style.fontSize = `${_config.value!.fontSize}px`
 }
 
-export function saveConfig (opts?: { isTemporary: boolean }) {
+export function saveConfig(opts?: { isTemporary: boolean }) {
   const rawConfig = toRaw(_config.value!)
   if (rawConfig.widgets.some(w => w.wmZorder === 'exclusive' && w.wmWants === 'show')) {
     return
@@ -43,14 +43,14 @@ export function saveConfig (opts?: { isTemporary: boolean }) {
   }
 }
 
-export function pushHostConfig () {
+export function pushHostConfig() {
   Host.sendEvent({
     name: 'CLIENT->MAIN::update-host-config',
     payload: getConfigForHost()
   })
 }
 
-export async function initConfig () {
+export async function initConfig() {
   Host.onEvent('MAIN->CLIENT::config-changed', (e) => {
     _lastSavedConfig = JSON.parse(e.contents) // should be a deep copy
     updateConfig(JSON.parse(e.contents))
@@ -82,7 +82,7 @@ export async function initConfig () {
   updateConfig(upgradeConfig(config))
 }
 
-export function poeWebApi () {
+export function poeWebApi() {
   const { language, realm } = AppConfig()
   switch (language) {
     case 'en': return 'www.pathofexile2.com'
@@ -317,7 +317,7 @@ export const defaultConfig = (): Config => ({
   ]
 })
 
-function upgradeConfig (_config: Config): Config {
+function upgradeConfig(_config: Config): Config {
   const config = _config as Omit<Config, 'widgets'> & { widgets: Array<Record<string, any>> }
 
   if (config.configVersion < 3) {
@@ -344,10 +344,10 @@ function upgradeConfig (_config: Config): Config {
       .chaosPriceThreshold = 0.05
 
     const mapCheck = config.widgets.find(w => w.wmType === 'map-check')!
-    ;(mapCheck as any).selectedStats.forEach((e: any) => {
-      e.matcher = e.matchRef
-      e.matchRef = undefined
-    })
+      ; (mapCheck as any).selectedStats.forEach((e: any) => {
+        e.matcher = e.matchRef
+        e.matchRef = undefined
+      })
 
     {
       const widgets = config.widgets.filter(w => w.wmType === 'image-strip')!
@@ -384,22 +384,22 @@ function upgradeConfig (_config: Config): Config {
     mapCheck.maps = { selectedStats: mapCheck.selectedStats }
     mapCheck.selectedStats = undefined
 
-    ;(config as any).itemCheckKey = (config as any).mapCheckKey || null
-    ;(config as any).mapCheckKey = undefined
+      ; (config as any).itemCheckKey = (config as any).mapCheckKey || null
+      ; (config as any).mapCheckKey = undefined
 
     config.configVersion = 7
   }
 
   if (config.configVersion < 8) {
     const itemCheck = config.widgets.find(w => w.wmType === 'item-check')!
-    ;(itemCheck as ItemCheckWidget).maps.showNewStats = false
+      ; (itemCheck as ItemCheckWidget).maps.showNewStats = false
     itemCheck.maps.selectedStats = (itemCheck as ItemCheckWidget).maps.selectedStats.map(entry => ({
       matcher: entry.matcher,
       decision:
         (entry as any).valueDanger ? 'danger'
           : (entry as any).valueWarning ? 'warning'
-              : (entry as any).valueDesirable ? 'desirable'
-                  : 'seen'
+            : (entry as any).valueDesirable ? 'desirable'
+              : 'seen'
     }))
 
     config.configVersion = 8
@@ -502,7 +502,7 @@ function upgradeConfig (_config: Config): Config {
       const p1decision =
         (stat.decision === 'danger') ? 'd'
           : (stat.decision === 'warning') ? 'w'
-              : (stat.decision === 'desirable') ? 'g' : 's'
+            : (stat.decision === 'desirable') ? 'g' : 's'
 
       stat.decision = `${p1decision}--`
     }
@@ -543,23 +543,23 @@ function upgradeConfig (_config: Config): Config {
   return config as unknown as Config
 }
 
-function getConfigForHost (): HostConfig {
+function getConfigForHost(): HostConfig {
   const actions: ShortcutAction[] = []
 
   const config = AppConfig()
   const priceCheck = AppConfig('price-check') as widget.PriceCheckWidget
   if (priceCheck.hotkey) {
-    actions.push({
-      shortcut: `${priceCheck.hotkeyHold} + ${priceCheck.hotkey}`,
-      action: { type: 'copy-item', target: 'price-check', focusOverlay: false },
-      keepModKeys: true
-    })
+    // actions.push({
+    //   shortcut: `${priceCheck.hotkeyHold} + ${priceCheck.hotkey}`,
+    //   action: { type: 'copy-item', target: 'price-check', focusOverlay: false },
+    //   keepModKeys: true
+    // })
   }
   if (priceCheck.hotkeyLocked) {
-    actions.push({
-      shortcut: priceCheck.hotkeyLocked,
-      action: { type: 'copy-item', target: 'price-check', focusOverlay: true }
-    })
+    // actions.push({
+    //   shortcut: priceCheck.hotkeyLocked,
+    //   action: { type: 'copy-item', target: 'price-check', focusOverlay: true }
+    // })
   }
   actions.push({
     shortcut: config.overlayKey,
@@ -568,28 +568,28 @@ function getConfigForHost (): HostConfig {
   })
   const itemCheck = AppConfig('item-check') as ItemCheckWidget
   if (itemCheck.wikiKey) {
-    actions.push({
-      shortcut: itemCheck.wikiKey,
-      action: { type: 'copy-item', target: 'open-wiki' }
-    })
+    // actions.push({
+    //   shortcut: itemCheck.wikiKey,
+    //   action: { type: 'copy-item', target: 'open-wiki' }
+    // })
   }
   if (itemCheck.craftOfExileKey) {
-    actions.push({
-      shortcut: itemCheck.craftOfExileKey,
-      action: { type: 'copy-item', target: 'open-craft-of-exile' }
-    })
+    // actions.push({
+    //   shortcut: itemCheck.craftOfExileKey,
+    //   action: { type: 'copy-item', target: 'open-craft-of-exile' }
+    // })
   }
   if (itemCheck.poedbKey) {
-    actions.push({
-      shortcut: itemCheck.poedbKey,
-      action: { type: 'copy-item', target: 'open-poedb' }
-    })
+    // actions.push({
+    //   shortcut: itemCheck.poedbKey,
+    //   action: { type: 'copy-item', target: 'open-poedb' }
+    // })
   }
   if (itemCheck.stashSearchKey) {
-    actions.push({
-      shortcut: itemCheck.stashSearchKey,
-      action: { type: 'copy-item', target: 'search-similar' }
-    })
+    // actions.push({
+    //   shortcut: itemCheck.stashSearchKey,
+    //   action: { type: 'copy-item', target: 'search-similar' }
+    // })
   }
   if (itemCheck.hotkey) {
     actions.push({
@@ -599,11 +599,11 @@ function getConfigForHost (): HostConfig {
   }
   const delveGrid = AppConfig('delve-grid') as widget.DelveGridWidget
   if (delveGrid.toggleKey) {
-    actions.push({
-      shortcut: delveGrid.toggleKey,
-      action: { type: 'trigger-event', target: 'delve-grid' },
-      keepModKeys: true
-    })
+    // actions.push({
+    //   shortcut: delveGrid.toggleKey,
+    //   action: { type: 'trigger-event', target: 'delve-grid' },
+    //   keepModKeys: true
+    // })
   }
   for (const command of config.commands) {
     if (command.hotkey) {
@@ -649,14 +649,14 @@ function getConfigForHost (): HostConfig {
         })
       }
     } else if (widget.wmType === 'item-search') {
-      const itemSearch = widget as ItemSearchWidget
-      if (itemSearch.ocrGemsKey) {
-        actions.push({
-          shortcut: itemSearch.ocrGemsKey,
-          keepModKeys: true,
-          action: { type: 'ocr-text', target: 'heist-gems' }
-        })
-      }
+      // const itemSearch = widget as ItemSearchWidget
+      // if (itemSearch.ocrGemsKey) {
+      //   actions.push({
+      //     shortcut: itemSearch.ocrGemsKey,
+      //     keepModKeys: true,
+      //     action: { type: 'ocr-text', target: 'heist-gems' }
+      //   })
+      // }
     }
   }
 
